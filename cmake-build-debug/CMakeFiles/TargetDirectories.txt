@@ -1,0 +1,3 @@
+F:/SZTE/Progalap_1/Hazi7/cmake-build-debug/CMakeFiles/Hazi7.dir
+F:/SZTE/Progalap_1/Hazi7/cmake-build-debug/CMakeFiles/edit_cache.dir
+F:/SZTE/Progalap_1/Hazi7/cmake-build-debug/CMakeFiles/rebuild_cache.dir
