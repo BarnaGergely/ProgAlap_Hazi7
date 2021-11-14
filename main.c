@@ -2,11 +2,11 @@
 
 typedef struct HASZNALAT {
     int kezdet;
-    float mertek;
+    double mertek;
 }HASZNALAT;
 
 typedef struct KEVEREK {
-    float korido;
+    double korido;
     HASZNALAT kopas;
     HASZNALAT elhasznalodas;
 }KEVEREK;
@@ -20,10 +20,20 @@ typedef struct CSEREK {
 typedef struct STRATEGIA {
     KEVEREK keverek[3];
     int korokszama;
-    float kiallas;
+    double kiallas;
     CSEREK csere[100];
     int cserekSzama;
 }STRATEGIA;
+
+double kerekit(double bemenet){
+    double kimenet = 0.0;
+    int temp = bemenet*1000.0 + 0.5;
+    kimenet = temp;
+    kimenet = kimenet/1000.0;
+
+
+    return kimenet;
+}
 
 int beolvas(char forras[100], STRATEGIA *strategia){
     FILE *infile;
@@ -33,19 +43,51 @@ int beolvas(char forras[100], STRATEGIA *strategia){
     }
 
     char gumi;
-    fscanf(infile, "%c %f %d %f %d %f\n", &gumi, &strategia->keverek[0].korido, &strategia->keverek[0].kopas.kezdet, &strategia->keverek[0].kopas.mertek, &strategia->keverek[0].elhasznalodas.kezdet, &strategia->keverek[0].elhasznalodas.mertek);
-    fscanf(infile, "%c %f %d %f %d %f\n", &gumi, &strategia->keverek[1].korido, &strategia->keverek[1].kopas.kezdet, &strategia->keverek[1].kopas.mertek, &strategia->keverek[1].elhasznalodas.kezdet, &strategia->keverek[1].elhasznalodas.mertek);
-    fscanf(infile, "%c %f %d %f %d %f\n", &gumi, &strategia->keverek[2].korido, &strategia->keverek[2].kopas.kezdet, &strategia->keverek[2].kopas.mertek, &strategia->keverek[2].elhasznalodas.kezdet, &strategia->keverek[2].elhasznalodas.mertek);
+    for (int i = 0; i < 3; ++i) {
+        KEVEREK keverekTemp;
+        fscanf(infile, "%c %lf %d %lf %d %lf\n", &gumi, &keverekTemp.korido, &keverekTemp.kopas.kezdet, &keverekTemp.kopas.mertek, &keverekTemp.elhasznalodas.kezdet, &keverekTemp.elhasznalodas.mertek);
+        keverekTemp.korido = kerekit(keverekTemp.korido);
 
-    fscanf(infile, "%d\n", strategia->korokszama);
-    fscanf(infile, "%f\n", strategia->kiallas);
+        if(gumi == 'A'){
+            strategia->keverek[0].korido = keverekTemp.korido;
+            strategia->keverek[0].kopas.kezdet = keverekTemp.kopas.kezdet;
+            strategia->keverek[0].kopas.mertek = keverekTemp.kopas.mertek;
+            strategia->keverek[0].elhasznalodas.kezdet = keverekTemp.elhasznalodas.kezdet;
+            strategia->keverek[0].elhasznalodas.mertek = keverekTemp.elhasznalodas.mertek;
+        }
+        if(gumi == 'B'){
+            strategia->keverek[1].korido = keverekTemp.korido;
+            strategia->keverek[1].kopas.kezdet = keverekTemp.kopas.kezdet;
+            strategia->keverek[1].kopas.mertek = keverekTemp.kopas.mertek;
+            strategia->keverek[1].elhasznalodas.kezdet = keverekTemp.elhasznalodas.kezdet;
+            strategia->keverek[1].elhasznalodas.mertek = keverekTemp.elhasznalodas.mertek;
+        }
+        if(gumi == 'C'){
+            strategia->keverek[2].korido = keverekTemp.korido;
+            strategia->keverek[2].kopas.kezdet = keverekTemp.kopas.kezdet;
+            strategia->keverek[2].kopas.mertek = keverekTemp.kopas.mertek;
+            strategia->keverek[2].elhasznalodas.kezdet = keverekTemp.elhasznalodas.kezdet;
+            strategia->keverek[2].elhasznalodas.mertek = keverekTemp.elhasznalodas.mertek;
+        }
+
+    }
+
+    /*
+    fscanf(infile, "%c %lf %d %lf %d %lf\n", &gumi, &strategia->keverek[0].korido, &strategia->keverek[0].kopas.kezdet, &strategia->keverek[0].kopas.mertek, &strategia->keverek[0].elhasznalodas.kezdet, &strategia->keverek[0].elhasznalodas.mertek);
+    fscanf(infile, "%c %lf %d %lf %d %lf\n", &gumi, &strategia->keverek[1].korido, &strategia->keverek[1].kopas.kezdet, &strategia->keverek[1].kopas.mertek, &strategia->keverek[1].elhasznalodas.kezdet, &strategia->keverek[1].elhasznalodas.mertek);
+    fscanf(infile, "%c %lf %d %lf %d %lf\n", &gumi, &strategia->keverek[2].korido, &strategia->keverek[2].kopas.kezdet, &strategia->keverek[2].kopas.mertek, &strategia->keverek[2].elhasznalodas.kezdet, &strategia->keverek[2].elhasznalodas.mertek);
+    */
+
+    fscanf(infile, "%d\n", &strategia->korokszama);
+    fscanf(infile, "%lf\n", &strategia->kiallas);
+    strategia->kiallas = kerekit(strategia->kiallas);
+
 
     char temp[20];
     int szamlalo = 0;
     while (fscanf(infile, "%s\n", &temp) == 1){
         int i = 0;
         for (i = 0; temp[i] <= '9'; ++i);
-        szamlalo++;
 
         if (temp[i] == 'A') {
             strategia->csere[szamlalo].keverek = 0;
@@ -59,50 +101,74 @@ int beolvas(char forras[100], STRATEGIA *strategia){
 
         temp[i] = ' ';
         sscanf(temp, "%d", &strategia->csere[szamlalo].kor );
-        printf("kor: %d\n", strategia->csere[szamlalo].kor);
-        printf("keverek: %d\n", strategia->csere[szamlalo].keverek);
+        //printf("kor: %d\n", strategia->csere[szamlalo].kor);
+        //printf("keverek: %d\n", strategia->csere[szamlalo].keverek);
+
+        szamlalo++;
     }
     strategia->cserekSzama = szamlalo;
-    printf("cserekSzama: %d\n", strategia->cserekSzama);
+    //printf("cserekSzama: %d\n", strategia->cserekSzama);
 
-    strategia->csere[strategia->cserekSzama+1].kor = strategia->korokszama;
+    strategia->csere[strategia->cserekSzama].kor = strategia->korokszama;
+
+
 
     // Hiba kereses: kevesebb mint 1 kiallas
     if (strategia->cserekSzama < 2) {return 1;}
 
     // Hiba kereses: kevesebb mint 2 keverek
-    int keverekekSzama = 0;
-    for (int i = 0; i < szamlalo; ++i) {
-        if(strategia->csere[i].keverek != strategia->csere[i+1].keverek) {
+    int keverekekSzama = 1;
+    for (int i = 1; (i < strategia->cserekSzama) && (keverekekSzama < 2); ++i) {
+        if(strategia->csere[i].keverek != strategia->csere[i-1].keverek) {
             keverekekSzama++;
         }
     }
-    if(keverekekSzama == 0) {return 1;}
+    if(keverekekSzama < 2) {return 1;}
 
-    // File lezaras
+    fclose(infile);
+
+    return 0;
+}
+
+
+int szovegKiir(char szoveg[100], char file[100]){
+    FILE *outfile;
+
+    if (!(outfile = fopen(file, "w"))) {
+        fclose(outfile);
+        return 1;
+    }
+    fprintf(outfile, "%s\n", szoveg);
+    fclose(outfile);
+
+    return 0;
+}
+
+int doubleKiir(double szam, char file[100]){
+    FILE *outfile;
+
+    if (!(outfile = fopen("ki.txt", "w"))) {
+        fclose(outfile);
+        return 1;
+    }
+    fprintf(outfile, "%.3lf\n", szam);
+    fclose(outfile);
 
     return 0;
 }
 
 
-int szovegKiir(char szoveg[100]){
-
-    return 0;
-}
-
-int floatKiir(float szam){
-
-}
-
-
-float menet(int kor, int keverek, STRATEGIA *strategia){
-    float megoldas = 0;
-    float kopas = 0;
-    float elhasznalodas = 0;
-    for (int i = 0; i <= kor; ++i) {
-        if(i > strategia->keverek[keverek].kopas.kezdet){ kopas = strategia->keverek[keverek].kopas.mertek; }
-        if(i > strategia->keverek[keverek].elhasznalodas.kezdet){ elhasznalodas += strategia->keverek[keverek].elhasznalodas.mertek; }
-        megoldas += strategia->keverek[keverek].korido + kopas + elhasznalodas;
+double menet(int kor, int keverekk, STRATEGIA *strategia){
+    double megoldas = 0;
+    double kopas = 0;
+    double elhasznalodas = 0;
+    double korido = strategia->keverek[keverekk].korido;
+    for (int i = 1; i <= kor; ++i) {
+        if(i > strategia->keverek[keverekk].kopas.kezdet){ korido += strategia->keverek[keverekk].kopas.mertek; }
+        if(i > (strategia->keverek[keverekk].elhasznalodas.kezdet + strategia->keverek[keverekk].kopas.kezdet)){elhasznalodas += strategia->keverek[keverekk].elhasznalodas.mertek; }
+        korido += elhasznalodas;
+        megoldas += korido;
+        //printf("%d kor ideje: %lf\n", i, korido);
     }
     return megoldas;
 }
@@ -114,21 +180,34 @@ int main() {
 
     /* ADATBETOLTES */
     if (beolvas("be.txt", &strategia) == 1){
-        //szovegKiir("HIBA");
+        szovegKiir("HIBA", "ki.txt");
         return 0;
     }
 
     /* SZAMOLAS */
-    float megoldas = 0 - strategia.kiallas;
-    for (int i = 0; i <= strategia.cserekSzama; ++i) {
-        megoldas += strategia.kiallas;
-        megoldas += menet(strategia.csere[i+1].kor - strategia.csere[i].kor, strategia.csere[i].keverek, &strategia);
-        printf("\nIdo : lf\n", megoldas);
+
+    double megoldas = 0 - strategia.kiallas;
+    for (int i = 0; (i < strategia.cserekSzama); ++i) {
+
+        double korokSzama = 0;
+        if (strategia.csere[i].kor >= (strategia.korokszama-1)){
+
+        } else {
+            if ((strategia.csere[i + 1].kor >= strategia.korokszama-1) && ((i+1) == (strategia.cserekSzama-1)) ) {
+                megoldas += strategia.kiallas;
+                korokSzama = strategia.korokszama - strategia.csere[i].kor;
+                megoldas += menet(korokSzama, strategia.csere[i].keverek, &strategia);
+            } else {
+                megoldas += strategia.kiallas;
+                korokSzama = strategia.csere[i + 1].kor - strategia.csere[i].kor;
+                megoldas += menet(korokSzama, strategia.csere[i].keverek, &strategia);
+            }
+        }
+        //printf("<<OsszIdo : %lf>>\n", megoldas);
     }
 
-
     /* ADATKIIRAS */
-    //floatKiir(megoldas);
+    doubleKiir(megoldas, "ki.txt");
 
     return 0;
 }
